@@ -38,6 +38,7 @@
     "flow-copy-source": "^1.1.0",
     "husky": "^0.13.3",
     "npm-watch": "^0.1.9",
+    "pnpm": "^8.5.1",
     "semantic-release": "^20.1.0"
   },
   "keywords": [
@@ -66,5 +67,6 @@
     "precommit": "npm run lint && npm run test",
     "test": "NODE_ENV=development ava --verbose"
   },
-  "version": "4.0.1"
+  "version": "4.0.1",
+  "packageManager": "pnpm@8.5.1"
 }
