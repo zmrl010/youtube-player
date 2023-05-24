@@ -15,6 +15,7 @@
     "load-script": "^1.0.0",
     "sister": "^3.0.0"
   },
+  "exports": "./dist/index.js",
   "files": [
     "dist"
   ],
@@ -23,6 +24,8 @@
     "@semantic-release/commit-analyzer": "^9.0.2",
     "@semantic-release/github": "^8.0.7",
     "@semantic-release/npm": "^9.0.2",
+    "@types/debug": "^4.1.8",
+    "@types/youtube": "^0.0.47",
     "ava": "^0.19.1",
     "babel-cli": "^6.24.1",
     "babel-plugin-add-module-exports": "^0.2.1",
@@ -39,7 +42,8 @@
     "husky": "^0.13.3",
     "npm-watch": "^0.1.9",
     "pnpm": "^8.5.1",
-    "semantic-release": "^20.1.0"
+    "semantic-release": "^20.1.0",
+    "typescript": "^5.0.4"
   },
   "keywords": [
     "youtube",
@@ -61,10 +65,10 @@
     "test": "{src,test}/*.js"
   },
   "scripts": {
-    "build": "NODE_ENV=production babel ./src --out-dir ./dist --copy-files && flow-copy-source src dist",
+    "build": "tsc -b",
     "lint": "eslint ./src ./test",
     "watch": "npm-watch",
-    "precommit": "npm run lint && npm run test",
+    "precommit": "pnpm lint && pnpm test",
     "test": "NODE_ENV=development ava --verbose"
   },
   "version": "4.0.1",

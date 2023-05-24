@@ -1,20 +1,12 @@
-// @flow
-
-import PlayerStates from './constants/PlayerStates';
+import PlayerStates from "./constants/PlayerState";
 
 export default {
   pauseVideo: {
-    acceptableStates: [
-      PlayerStates.ENDED,
-      PlayerStates.PAUSED,
-    ],
+    acceptableStates: [PlayerStates.ENDED, PlayerStates.PAUSED],
     stateChangeRequired: false,
   },
   playVideo: {
-    acceptableStates: [
-      PlayerStates.ENDED,
-      PlayerStates.PLAYING,
-    ],
+    acceptableStates: [PlayerStates.ENDED, PlayerStates.PLAYING],
     stateChangeRequired: false,
   },
   seekTo: {
@@ -27,7 +19,6 @@ export default {
 
     // TRICKY: `seekTo` may not cause a state change if no buffering is
     // required.
-    // eslint-disable-next-line unicorn/numeric-separators-style
-    timeout: 3000,
+    timeout: 3_000,
   },
-};
+} as const;
