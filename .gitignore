@@ -13,3 +13,4 @@ node_modules
 !.README
 !.releaserc
 !.scripts
+!.npmrc
