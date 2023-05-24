@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "canonical",
-    "canonical/flowtype"
-  ],
+  "extends": ["canonical", "canonical/flowtype", "prettier"],
   "root": true,
   "rules": {
     "canonical/destructuring-property-newline": 0,
@@ -20,9 +17,7 @@
     "flowtype/require-return-type": 0,
     "no-undef": 0
   },
-  "plugins": [
-    "promise"
-  ],
+  "plugins": ["promise"],
   "env": {
     "browser": true
   }

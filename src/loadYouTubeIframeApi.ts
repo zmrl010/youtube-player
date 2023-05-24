@@ -1,10 +1,5 @@
-// @flow
-
-import load from 'load-script';
-import type {
-  EmitterType,
-  IframeApiType,
-} from './types';
+import load from "load-script";
+import type { EmitterType, IframeApiType } from "./types";
 
 export default (emitter: EmitterType): Promise<IframeApiType> => {
   /**
@@ -17,11 +12,12 @@ export default (emitter: EmitterType): Promise<IframeApiType> => {
 
       return;
     } else {
-      const protocol = window.location.protocol === 'http:' ? 'http:' : 'https:';
+      const protocol =
+        window.location.protocol === "http:" ? "http:" : "https:";
 
-      load(protocol + '//www.youtube.com/iframe_api', (error) => {
+      load(protocol + "//www.youtube.com/iframe_api", (error) => {
         if (error) {
-          emitter.trigger('error', error);
+          emitter.trigger("error", error);
         }
       });
     }
