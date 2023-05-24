@@ -1,15 +1,15 @@
-export type EmitterType = {
+export type Emitter = {
   trigger: (eventName: string, event: Object) => void;
 };
 
-export type IframeApiType = {
-  Player: YT.Player;
+export type IframeApi = {
+  Player: typeof YT.Player;
 };
 
 /**
  * @see https://developers.google.com/youtube/iframe_api_reference
  */
-export type YouTubePlayerType = {
+export type YouTubePlayer = {
   addEventListener: (event: string, listener: Function) => void;
   destroy: () => void;
   getAvailablePlaybackRates: () => ReadonlyArray<number>;

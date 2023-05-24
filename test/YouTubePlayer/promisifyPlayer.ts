@@ -1,7 +1,7 @@
 import { test } from "vitest";
 import YouTubePlayer from "../../src/YouTubePlayer";
 import functionNames from "../../src/functionNames";
-import { type YouTubePlayerType } from "../../src/types";
+import { type YouTubePlayer } from "../../src/types";
 
 test("is a function", (t) => {
   t.expect(YouTubePlayer).toBeInstanceOf(Function);

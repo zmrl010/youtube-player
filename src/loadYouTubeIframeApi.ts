@@ -1,12 +1,18 @@
 import load from "load-script";
-import type { EmitterType, IframeApiType } from "./types";
+import type { Emitter, IframeApi } from "./types";
 
-export default (emitter: EmitterType): Promise<IframeApiType> => {
+declare global {
+  interface Window {
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
+
+export default (emitter: Emitter): Promise<IframeApi> => {
   /**
    * A promise that is resolved when window.onYouTubeIframeAPIReady is called.
    * The promise is resolved with a reference to window.YT object.
    */
-  const iframeAPIReady = new Promise((resolve) => {
+  const iframeAPIReady = new Promise<IframeApi>((resolve) => {
     if (window.YT && window.YT.Player && window.YT.Player instanceof Function) {
       resolve(window.YT);
 

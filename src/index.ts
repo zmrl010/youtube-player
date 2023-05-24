@@ -1,8 +1,8 @@
 import Sister from "sister";
-import YouTubePlayer from "./YouTubePlayer";
+import { promisifyPlayer, proxyEvents } from "./YouTubePlayer";
 import loadYouTubeIframeApi from "./loadYouTubeIframeApi";
 import type FunctionStateMap from "./FunctionStateMap";
-import type { IframeApiType, YouTubePlayerType } from "./types";
+import type { IframeApi, YouTubePlayer } from "./types";
 
 /**
  * @see https://developers.google.com/youtube/iframe_api_reference#Loading_a_Video_Player
@@ -18,7 +18,7 @@ type OptionsType = {
 /**
  * @see https://developers.google.com/youtube/iframe_api_reference
  */
-let youtubeIframeAPI: Promise<IframeApiType>;
+let youtubeIframeAPI: Promise<IframeApi>;
 
 /**
  * A factory function used to produce an instance of YT.Player and
@@ -36,7 +36,7 @@ let youtubeIframeAPI: Promise<IframeApiType>;
  * states.
  */
 export default (
-  maybeElementId: string | HTMLElement | YouTubePlayerType,
+  maybeElementId: string | HTMLElement | YouTubePlayer,
   options: OptionsType = {},
   strictState: boolean = false
 ) => {
@@ -58,15 +58,12 @@ export default (
     throw new Error('Element "' + maybeElementId + '" does not exist.');
   }
 
-  options.events = YouTubePlayer.proxyEvents(emitter);
+  options.events = proxyEvents(emitter);
 
   const playerAPIReady = new Promise(
-    (resolve: (result: YouTubePlayerType) => void) => {
-      if (
-        typeof maybeElementId === "object" &&
-        maybeElementId.playVideo instanceof Function
-      ) {
-        const player: YouTubePlayerType = maybeElementId;
+    (resolve: (result: YouTubePlayer) => void) => {
+      if (typeof maybeElementId === "object" && "playVideo" in maybeElementId) {
+        const player: YouTubePlayer = maybeElementId;
 
         resolve(player);
       } else {
@@ -74,10 +71,7 @@ export default (
         // eslint-disable-next-line promise/catch-or-return
         youtubeIframeAPI.then((YT) => {
           // eslint-disable-line promise/prefer-await-to-then
-          const player: YouTubePlayerType = new YT.Player(
-            maybeElementId,
-            options
-          );
+          const player = new YT.Player(maybeElementId as string, options);
 
           emitter.on("ready", () => {
             resolve(player);
@@ -89,7 +83,7 @@ export default (
     }
   );
 
-  const playerApi = YouTubePlayer.promisifyPlayer(playerAPIReady, strictState);
+  const playerApi = promisifyPlayer(playerAPIReady, strictState);
 
   playerApi.on = emitter.on;
   playerApi.off = emitter.off;

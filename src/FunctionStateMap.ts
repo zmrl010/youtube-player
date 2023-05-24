@@ -1,19 +1,19 @@
-import PlayerStates from "./constants/PlayerState";
+import PlayerState from "./constants/PlayerState";
 
 export default {
   pauseVideo: {
-    acceptableStates: [PlayerStates.ENDED, PlayerStates.PAUSED],
+    acceptableStates: [PlayerState.ENDED, PlayerState.PAUSED],
     stateChangeRequired: false,
   },
   playVideo: {
-    acceptableStates: [PlayerStates.ENDED, PlayerStates.PLAYING],
+    acceptableStates: [PlayerState.ENDED, PlayerState.PLAYING],
     stateChangeRequired: false,
   },
   seekTo: {
     acceptableStates: [
-      PlayerStates.ENDED,
-      PlayerStates.PLAYING,
-      PlayerStates.PAUSED,
+      PlayerState.ENDED,
+      PlayerState.PLAYING,
+      PlayerState.PAUSED,
     ],
     stateChangeRequired: true,
 
