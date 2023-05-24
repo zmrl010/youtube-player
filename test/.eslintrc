@@ -1,7 +1,5 @@
 {
-  "extends": [
-    "canonical/ava"
-  ],
+  "extends": ["canonical/vitest"],
   "rules": {
     "id-length": 0
   }
