@@ -1,37 +1,37 @@
-// @flow
-
-/* eslint-disable promise/prefer-await-to-then */
-
 import createDebug from "debug";
 import FunctionStateMap from "./FunctionStateMap";
 import eventNames from "./eventNames";
 import functionNames from "./functionNames";
-import type { Emitter, YouTubePlayer } from "./types";
-
-type EventHandlerMapType = {
-  [key: string]: (event: Object) => void;
-};
+import type { PromisePlayer, YouTubePlayer } from "./types";
+import { type HandlerMap, type Emitter } from "./events";
 
 const debug = createDebug("youtube-player");
+
+type ProxyEventMap<Events extends HandlerMap> = {
+  [K in keyof Events as `on${Capitalize<string & K>}`]: Events[K];
+};
+
+const capitalize = <S extends string>(str: S): Capitalize<S> =>
+  (str.slice(0, 1).toUpperCase() + str.slice(1)) as Capitalize<S>;
 
 /**
  * Construct an object that defines an event handler for all of the YouTube
  * player events. Proxy captured events through an event emitter.
  *
- * @todo Capture event parameters.
  * @see https://developers.google.com/youtube/iframe_api_reference#Events
  */
-export const proxyEvents = (emitter: Emitter): EventHandlerMapType => {
-  const events: EventHandlerMapType = {};
+export const proxyEvents = <Events extends HandlerMap>(
+  emitter: Emitter<Events>
+): ProxyEventMap<Events> => {
+  const events = {} as ProxyEventMap<Events>;
 
   for (const eventName of eventNames) {
-    const onEventName =
-      "on" + eventName.slice(0, 1).toUpperCase() + eventName.slice(1);
+    const onEventName = `on${capitalize(eventName)}` as const;
 
-    events[onEventName] = (event) => {
-      debug('event "%s"', onEventName, event);
+    events[onEventName] = (...args: Parameters<Events[typeof eventName]>) => {
+      debug('event "%s"', onEventName, ...args);
 
-      emitter.trigger(eventName, event);
+      emitter.trigger(eventName, ...args);
     };
   }
 
@@ -51,13 +51,8 @@ export const proxyEvents = (emitter: Emitter): EventHandlerMapType => {
 export const promisifyPlayer = (
   playerAPIReady: Promise<YouTubePlayer>,
   strictState: boolean = false
-) => {
-  const functions: Partial<
-    Record<
-      (typeof functionNames)[number],
-      YouTubePlayer[(typeof functionNames)[number]]
-    >
-  > = {};
+): PromisePlayer => {
+  const functions = {} as PromisePlayer;
 
   for (const functionName of functionNames) {
     if (strictState && functionName in FunctionStateMap) {
@@ -65,11 +60,7 @@ export const promisifyPlayer = (
         const player = await playerAPIReady;
         const stateInfo = FunctionStateMap[functionName];
         const playerState = player.getPlayerState();
-        // eslint-disable-next-line no-warning-comments
-        // TODO: Just spread the args into the function once Babel is fixed:
-        // https://github.com/babel/babel/issues/4270
-        //
-        // eslint-disable-next-line prefer-spread
+
         const value = player[functionName](...args);
         // TRICKY: For functions like `seekTo`, a change in state must be
         // triggered given that the resulting state could match the initial
@@ -128,5 +119,5 @@ export const promisifyPlayer = (
     }
   }
 
-  return functions;
+  return functions as PromisePlayer;
 };

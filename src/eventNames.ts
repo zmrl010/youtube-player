@@ -5,11 +5,11 @@
  * it emits an object: `{volume: 82.6923076923077, muted: false}`
  */
 export default [
-  "ready",
-  "stateChange",
+  "apiChange",
+  "error",
   "playbackQualityChange",
   "playbackRateChange",
-  "error",
-  "apiChange",
+  "ready",
+  "stateChange",
   "volumeChange",
 ] as const;

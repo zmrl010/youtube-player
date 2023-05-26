@@ -7,9 +7,6 @@ dependencies:
   load-script:
     specifier: ^2.0.0
     version: 2.0.0
-  sister:
-    specifier: ^3.0.2
-    version: 3.0.2
 
 devDependencies:
   '@semantic-release/commit-analyzer':
@@ -5549,10 +5546,6 @@ packages:
       figures: 2.0.0
       pkg-conf: 2.1.0
     dev: true
-
-  /sister@3.0.2:
-    resolution: {integrity: sha512-p19rtTs+NksBRKW9qn0UhZ8/TUI9BPw9lmtHny+Y3TinWlOa9jWh9xB0AtPSdmOy49NJJJSSe0Ey4C7h0TrcYA==}
-    dev: false
 
   /slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}

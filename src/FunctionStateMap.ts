@@ -16,7 +16,6 @@ export default {
       PlayerState.PAUSED,
     ],
     stateChangeRequired: true,
-
     // TRICKY: `seekTo` may not cause a state change if no buffering is
     // required.
     timeout: 3_000,

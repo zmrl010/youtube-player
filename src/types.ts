@@ -1,10 +1,25 @@
-export type Emitter = {
-  trigger: (eventName: string, event: Object) => void;
-};
+import eventNames from "./eventNames";
+import { Emitter } from "./events";
 
 export type IframeApi = {
-  Player: typeof YT.Player;
+  Player: new (
+    ref: string | HTMLElement,
+    options?: YT.PlayerOptions
+  ) => YouTubePlayer;
 };
+
+export type EventKey = (typeof eventNames)[number];
+
+export type PlayerEvents = Pick<
+  Emitter<Record<EventKey, () => void>>,
+  "on" | "off"
+>;
+
+export type PromisePlayer = {
+  [K in keyof YouTubePlayer]: (
+    ...args: Parameters<YouTubePlayer[K]>
+  ) => Promise<ReturnType<YouTubePlayer[K]>>;
+} & PlayerEvents;
 
 /**
  * @see https://developers.google.com/youtube/iframe_api_reference
@@ -16,9 +31,9 @@ export type YouTubePlayer = {
   getAvailableQualityLevels: () => ReadonlyArray<string>;
   getCurrentTime: () => number;
   getDuration: () => number;
-  getIframe: () => Object;
-  getOption: () => any;
-  getOptions: () => any;
+  getIframe: () => HTMLIFrameElement;
+  getOption: () => unknown;
+  getOptions: () => unknown;
   setOption: () => void;
   setOptions: () => void;
   cuePlaylist: (

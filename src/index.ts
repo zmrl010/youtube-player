@@ -1,4 +1,4 @@
-import Sister from "sister";
+import { createEventEmitter } from "./events";
 import { promisifyPlayer, proxyEvents } from "./YouTubePlayer";
 import loadYouTubeIframeApi from "./loadYouTubeIframeApi";
 import type FunctionStateMap from "./FunctionStateMap";
@@ -7,10 +7,10 @@ import type { IframeApi, YouTubePlayer } from "./types";
 /**
  * @see https://developers.google.com/youtube/iframe_api_reference#Loading_a_Video_Player
  */
-type OptionsType = {
-  events?: Object;
+type Options = {
+  events?: YT.Events;
   height?: number;
-  playerVars?: Object;
+  playerVars?: YT.PlayerVars;
   videoId?: string;
   width?: number;
 };
@@ -37,10 +37,10 @@ let youtubeIframeAPI: Promise<IframeApi>;
  */
 export default (
   maybeElementId: string | HTMLElement | YouTubePlayer,
-  options: OptionsType = {},
+  options: Options = {},
   strictState: boolean = false
 ) => {
-  const emitter = Sister();
+  const emitter = createEventEmitter();
 
   if (!youtubeIframeAPI) {
     youtubeIframeAPI = loadYouTubeIframeApi(emitter);
@@ -63,11 +63,9 @@ export default (
   const playerAPIReady = new Promise(
     (resolve: (result: YouTubePlayer) => void) => {
       if (typeof maybeElementId === "object" && "playVideo" in maybeElementId) {
-        const player: YouTubePlayer = maybeElementId;
-
-        resolve(player);
+        resolve(maybeElementId);
       } else {
-        // asume maybeElementId can be rendered inside
+        // assume maybeElementId can be rendered inside
         // eslint-disable-next-line promise/catch-or-return
         youtubeIframeAPI.then((YT) => {
           // eslint-disable-line promise/prefer-await-to-then
