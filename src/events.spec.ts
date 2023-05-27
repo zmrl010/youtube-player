@@ -1,7 +1,8 @@
-import { expect, describe, beforeEach, it, vi } from "vitest";
-import { createEventEmitter, Emitter } from "./events";
+import { type Emitter } from "./events";
+import { createEventEmitter } from "./events";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-describe("Emitter", function () {
+describe("Emitter", () => {
   let eventEmitter: Emitter;
 
   beforeEach(() => {
@@ -12,11 +13,8 @@ describe("Emitter", function () {
     const handler = vi.fn();
 
     eventEmitter.on("foo", handler);
-
     eventEmitter.trigger("foo");
-
     eventEmitter.off("foo", handler);
-
     eventEmitter.trigger("foo");
 
     expect(handler).toHaveBeenCalledOnce();

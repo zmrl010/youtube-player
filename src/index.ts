@@ -1,8 +1,7 @@
 import { createEventEmitter } from "./events";
-import { promisifyPlayer, proxyEvents } from "./YouTubePlayer";
 import loadYouTubeIframeApi from "./loadYouTubeIframeApi";
-import type FunctionStateMap from "./FunctionStateMap";
-import type { IframeApi, YouTubePlayer } from "./types";
+import { type IframeApi, type YouTubePlayer } from "./types";
+import { promisifyPlayer, proxyEvents } from "./YouTubePlayer";
 
 /**
  * @see https://developers.google.com/youtube/iframe_api_reference#Loading_a_Video_Player
@@ -36,7 +35,7 @@ let youtubeIframeAPI: Promise<IframeApi>;
  * states.
  */
 export default (
-  maybeElementId: string | HTMLElement | YouTubePlayer,
+  maybeElementId: HTMLElement | YouTubePlayer | string,
   options: Options = {},
   strictState: boolean = false
 ) => {
@@ -50,9 +49,9 @@ export default (
     throw new Error("Event handlers cannot be overwritten.");
   }
 
-  // eslint-disable-next-line unicorn/prefer-query-selector
   if (
     typeof maybeElementId === "string" &&
+    // eslint-disable-next-line unicorn/prefer-query-selector
     !document.getElementById(maybeElementId)
   ) {
     throw new Error('Element "' + maybeElementId + '" does not exist.');
@@ -66,16 +65,13 @@ export default (
         resolve(maybeElementId);
       } else {
         // assume maybeElementId can be rendered inside
-        // eslint-disable-next-line promise/catch-or-return
+        // eslint-disable-next-line promise/prefer-await-to-then
         youtubeIframeAPI.then((YT) => {
-          // eslint-disable-line promise/prefer-await-to-then
-          const player = new YT.Player(maybeElementId as string, options);
+          const player = new YT.Player(maybeElementId, options);
 
           emitter.on("ready", () => {
             resolve(player);
           });
-
-          return null;
         });
       }
     }

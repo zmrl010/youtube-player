@@ -1,4 +1,4 @@
-export type Handler = (...args: unknown[]) => void;
+export type Handler = (...args: unknown[]) => unknown;
 export type HandlerMap = Record<string, Handler>;
 
 /**
@@ -6,23 +6,23 @@ export type HandlerMap = Record<string, Handler>;
  */
 export type Emitter<EventMap extends HandlerMap = HandlerMap> = {
   /**
-   * Listen for an event and execute handler when it occurs
-   *
-   * @param event name of the event
-   * @param handler function executed when event occurs
-   */
-  on: <Event extends keyof EventMap>(
-    event: Event,
-    handler: EventMap[Event]
-  ) => void;
-
-  /**
    * Remove an event handler
    *
    * @param event name of the event
    * @param handler function executed when event occurs
    */
   off: <Event extends keyof EventMap>(
+    event: Event,
+    handler: EventMap[Event]
+  ) => void;
+
+  /**
+   * Listen for an event and execute handler when it occurs
+   *
+   * @param event name of the event
+   * @param handler function executed when event occurs
+   */
+  on: <Event extends keyof EventMap>(
     event: Event,
     handler: EventMap[Event]
   ) => void;
@@ -42,11 +42,11 @@ export type Emitter<EventMap extends HandlerMap = HandlerMap> = {
 /**
  * Map keys to stacks (arrays) of the corresponding input type
  */
-type StackMap<T> = { [K in keyof T]?: T[K][] };
+type StackMap<T> = { [K in keyof T]?: Array<T[K]> };
 
-export function createEventEmitter<
+export const createEventEmitter = <
   Events extends HandlerMap = HandlerMap
->(): Emitter<Events> {
+>(): Emitter<Events> => {
   const eventHandlers: StackMap<Events> = {};
 
   return {
@@ -82,4 +82,4 @@ export function createEventEmitter<
       }
     },
   };
-}
+};

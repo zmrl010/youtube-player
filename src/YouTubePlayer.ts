@@ -1,18 +1,24 @@
-import createDebug from "debug";
-import FunctionStateMap from "./FunctionStateMap";
 import eventNames from "./eventNames";
+import { type Emitter, type HandlerMap } from "./events";
 import functionNames from "./functionNames";
-import type { PromisePlayer, YouTubePlayer } from "./types";
-import { type HandlerMap, type Emitter } from "./events";
+import FunctionStateMap from "./FunctionStateMap";
+import {
+  type EventKey,
+  type PromiseProxyPlayer,
+  type YouTubePlayer,
+} from "./types";
+import createDebug from "debug";
 
 const debug = createDebug("youtube-player");
 
 type ProxyEventMap<Events extends HandlerMap> = {
-  [K in keyof Events as `on${Capitalize<string & K>}`]: Events[K];
+  [K in keyof Events as `on${Capitalize<Extract<K, string>>}`]: Events[K];
 };
 
-const capitalize = <S extends string>(str: S): Capitalize<S> =>
-  (str.slice(0, 1).toUpperCase() + str.slice(1)) as Capitalize<S>;
+const capitalize = <S extends string>(string_: S): Capitalize<S> => {
+  return (string_.slice(0, 1).toUpperCase() +
+    string_.slice(1)) as Capitalize<S>;
+};
 
 /**
  * Construct an object that defines an event handler for all of the YouTube
@@ -20,22 +26,22 @@ const capitalize = <S extends string>(str: S): Capitalize<S> =>
  *
  * @see https://developers.google.com/youtube/iframe_api_reference#Events
  */
-export const proxyEvents = <Events extends HandlerMap>(
-  emitter: Emitter<Events>
-): ProxyEventMap<Events> => {
-  const events = {} as ProxyEventMap<Events>;
+export const proxyEvents = <EventMap extends Record<EventKey, () => unknown>>(
+  emitter: Emitter<EventMap>
+): ProxyEventMap<EventMap> => {
+  const eventEntries = eventNames.map((eventName) => {
+    const name = `on${capitalize(eventName)}` as const;
 
-  for (const eventName of eventNames) {
-    const onEventName = `on${capitalize(eventName)}` as const;
-
-    events[onEventName] = (...args: Parameters<Events[typeof eventName]>) => {
-      debug('event "%s"', onEventName, ...args);
+    const handler = (...args: Parameters<EventMap[typeof eventName]>) => {
+      debug('event "%s"', name, ...args);
 
       emitter.trigger(eventName, ...args);
     };
-  }
 
-  return events;
+    return [name, handler] as const;
+  });
+
+  return Object.fromEntries(eventEntries) as ProxyEventMap<EventMap>;
 };
 
 /**
@@ -51,8 +57,8 @@ export const proxyEvents = <Events extends HandlerMap>(
 export const promisifyPlayer = (
   playerAPIReady: Promise<YouTubePlayer>,
   strictState: boolean = false
-): PromisePlayer => {
-  const functions = {} as PromisePlayer;
+): PromiseProxyPlayer => {
+  const functions = {} as PromiseProxyPlayer;
 
   for (const functionName of functionNames) {
     if (strictState && functionName in FunctionStateMap) {
@@ -67,7 +73,6 @@ export const promisifyPlayer = (
         // state.
         if (
           stateInfo.stateChangeRequired ||
-          // eslint-disable-next-line no-extra-parens
           (Array.isArray(stateInfo.acceptableStates) &&
             !stateInfo.acceptableStates.includes(playerState))
         ) {
@@ -108,6 +113,7 @@ export const promisifyPlayer = (
             return value;
           });
         }
+
         return value;
       };
     } else {
@@ -119,5 +125,5 @@ export const promisifyPlayer = (
     }
   }
 
-  return functions as PromisePlayer;
+  return functions as PromiseProxyPlayer;
 };

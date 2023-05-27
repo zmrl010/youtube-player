@@ -1,6 +1,7 @@
+import { type Emitter } from "./events";
+import { createEventEmitter } from "./events";
+import { type IframeApi } from "./types";
 import load from "load-script";
-import type { IframeApi } from "./types";
-import { createEventEmitter, Emitter } from "./events";
 
 declare global {
   interface Window {
@@ -15,7 +16,7 @@ export default (emitter: Emitter): Promise<IframeApi> => {
    * The promise is resolved with a reference to window.YT object.
    */
   const iframeAPIReady = new Promise<IframeApi>((resolve) => {
-    if (window.YT && window.YT.Player && window.YT.Player instanceof Function) {
+    if (window.YT?.Player && window.YT.Player instanceof Function) {
       resolve(window.YT as unknown as IframeApi);
 
       return;
